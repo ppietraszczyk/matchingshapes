@@ -236,10 +236,12 @@ class Sprite():
 	def add_to_all(self):
 		global all
 		for c in self.cell:
-			mvx = c[1] % BLOCK_SIZE
-			mvy = c[2] % BLOCK_SIZE
-			vx = (c[1]-mvx)/BLOCK_SIZE
-			vy = (c[2]-mvy)/BLOCK_SIZE
+			#mvx = c[1] % BLOCK_SIZE
+			#mvy = c[2] % BLOCK_SIZE
+			#vx = (c[1]-mvx)/BLOCK_SIZE
+			#vy = (c[2]-mvy)/BLOCK_SIZE
+			vx = c[1] / BLOCK_SIZE
+			vy = c[2] / BLOCK_SIZE
 			tab_x = np.array([vx])
 			tab_y = np.array([vy])
 			tab_x = tab_x.astype(int)
@@ -247,48 +249,32 @@ class Sprite():
 			if c[0] == 1 and vy >= 0 and vx >= 0:
 				all[tab_y, tab_x] = 1
 
-	def is_block_adjacent_to_others(self, all_blocks):
-		global all
-		to_right_x = -1
-		for c in self.cell:
-			if c[0] == 1 and (c[1] / BLOCK_SIZE)  > to_right_x:
-				to_right_x = (c[1] / BLOCK_SIZE)
-				#to_right_y = (c[2] / BLOCK_SIZE)
-		to_left_x = 16
-		for c in self.cell:
-			if c[0] and (c[1]  / BLOCK_SIZE) < to_left_x:
-				to_left_x = (c[1] / BLOCK_SIZE)
-				#to_left_y = (c[2] / BLOCK_SIZE)
-		to_top_y = 16
-		for c in self.cell:
-			if c[0] == 1 and (c[2] / BLOCK_SIZE) < to_top_y:
-				to_top_y = (c[2] / BLOCK_SIZE)
-				#to_top_x = (c[1] / BLOCK_SIZE)
-		to_bottom_y = -1
-		for c in self.cell:
-			if c[0] == 1 and (c[2] / BLOCK_SIZE) > to_bottom_y:
-				to_bottom_y = (c[2] / BLOCK_SIZE)
-				print("LLLLLLL")
-				#to_bottom_x = (c[1] / BLOCK_SIZE)
-
-		print("TO_BOTTOM_Y %d: " % to_bottom_y)
-		print("TO_TOP_Y %d: " % to_top_y)
-		print("TO_RIGHT_X %d: " % to_right_x)
-		print("TO_LEFT_X %d: " % to_left_x)
 
 
-		for y in range(15):
-			for x in range(15):
-				if y < 13 and all[(y + 1), x] == 0 and (y + 1) == to_bottom_y:
-					return True
-				if y > 0 and all[(y - 1), x] == 0 and (y - 1) == to_top_y:
-					return True
-				if x < 13 and all[y, (x + 1)] == 0 and (x + 1) == to_right_x:
-					return True
-				if x > 0 and all[y, (x - 1)] == 0 and (x - 1) == to_left_x:
-					return True
+def check_adjacency(block1, block2):
+	"""Sprawdza czy dwa bloki są przylegające (dotykają się bokami lub rogami)"""
+	blocks1 = block1.get_world_blocks()
+	for x1, y1 in blocks1:
+		for y2 in range(15):
+			for x2 in range(15):
+				# Sprawdzamy czy bloki są przylegające (różnica nie większa niż rozmiar bloku)
+				if block2[y2, x2] == 1:
+					dx = abs(x1 - x2 * BLOCK_SIZE)
+					dy = abs(y1 - y2 * BLOCK_SIZE)
+					# Bloki są przylegające jeśli mają wspólny bok lub róg
+					if (dx <= BLOCK_SIZE and dy <= BLOCK_SIZE) and not (dx == 0 and dy == 0):
+						print ("CCCCCCCCCCCCC")
+						return True
+	return False
 
-		return False
+def is_block_adjacent_to_others(block, other_blocks):
+	"""Sprawdza czy blok jest przylegający do któregoś z innych bloków"""
+	if check_adjacency(block, other_blocks):
+		#other_blocks.append(block)
+		print ("AAAAAAAAAAAA")
+		return True
+	return False
+
 
 def main():
 	# Inicjalizacja SDL
@@ -394,7 +380,8 @@ def main():
 			elif event.type == SDL_MOUSEBUTTONUP:
 				if event.button.button == SDL_BUTTON_LEFT and is_selected:
 					# Sprawdzamy czy blok jest przylegający do któregoś z innych bloków
-					if selected_block.is_block_adjacent_to_others(all):
+					#if selected_block.is_block_adjacent_to_others(all):
+					if is_block_adjacent_to_others(selected_block, all):
 						# Dodajemy blok do listy wszystkich bloków
 						selected_block.add_to_all()
 					'''
@@ -445,7 +432,7 @@ def main():
 						offset_x, offset_y = selected_block.get_offset(c)
 						#print ("offset_x: %d" % offset_x)
 						#print ("offset_y: %d" % offset_y)
-						selected_block.set_pos(mouse_x - offset_x + BLOCK_SIZE, mouse_y - offset_y + BLOCK_SIZE, c)
+						selected_block.set_pos(mouse_x - offset_x, mouse_y - offset_y, c)
 						#print ("selectef_block.x %d " % c[0])
 						#print ("selected_block.y %d " % c[1])
 		if current_time - clock > 16:

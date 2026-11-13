@@ -1,3 +1,10 @@
+# [0.261113-2]
+* Bywa że puszczone element, przesuwane są na lewo
+
+# [0.261113-1]
+* Dodaje puszczone eleemnty na siatce
+* Niestety, dodaje nie tylko obok, ale również na elementach 'all'
+
 # [0.261112-1]
 * Nie udana implementacja dorysowania elementu
 
