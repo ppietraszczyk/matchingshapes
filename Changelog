@@ -1,0 +1,23 @@
+# [0.261112-1]
+* Nie udana implementacja dorysowania elementu
+
+# [0.261112-0]
+* Rysuje puszczony element na siatce
+* NIE dorysowuje następnych
+
+# [0.261110-0]
+* Po zaznaczeniu, nie przesuwa już elementu na środek planszy
+
+# [0.261031-3]
+* poprawki
+
+# [0.261031-2]
+* element parkuje na siatce
+* FIXME - po zaznaczeniu, element skacze na górę planszy
+
+# [0.261031-0]
+* Przesuwa element - jdnak niefortunnie obraca go
+
+# [0.261030-0]
+* Inicjacja projektu
+

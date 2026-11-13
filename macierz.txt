@@ -1,0 +1,15 @@
+import numpy as np
+
+# Utworzenie macierzy 2x3
+mat = np.zeros((2, 3))
+
+# Przypisanie wartości do wiersza 0, kolumny 2
+mat[0, 2] = 55
+
+# Przypisanie wartości do wiersza 1, kolumny 1
+mat[1, 1] = 88
+
+print(mat)
+# Wynik:
+# [[ 0.  0. 55.]
+#  [ 0. 88.  0.]]

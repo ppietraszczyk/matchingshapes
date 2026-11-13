@@ -1,0 +1,1 @@
+﻿Jadąc pewnego razu autobusem. Pasażer siedzący obok mnie, grał w coś takiego na smartfonie. Nie mam pojęcia jak nazywa się oryginał. Moja wersja nosi nazwę ‘Matchingshapes’ – czyli „Dopasowywaniekształtów”. Napisane przy użyciu PySDL2 oraz NumPy. Piszę czasami, w wolnej chwili. 
