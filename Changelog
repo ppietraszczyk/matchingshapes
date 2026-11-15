@@ -1,3 +1,7 @@
+# [0.261115-0]
+* Elementy parkują prawidłowo
+* Jednak po przemieszczeniu elementu, zostaje on obrucony
+
 # [0.261113-2]
 * Bywa że puszczone element, przesuwane są na lewo
 

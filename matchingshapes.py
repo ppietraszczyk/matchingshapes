@@ -236,12 +236,17 @@ class Sprite():
 	def add_to_all(self):
 		global all
 		for c in self.cell:
-			#mvx = c[1] % BLOCK_SIZE
-			#mvy = c[2] % BLOCK_SIZE
-			#vx = (c[1]-mvx)/BLOCK_SIZE
-			#vy = (c[2]-mvy)/BLOCK_SIZE
-			vx = c[1] / BLOCK_SIZE
-			vy = c[2] / BLOCK_SIZE
+			mvx = c[1] % BLOCK_SIZE
+			mvy = c[2] % BLOCK_SIZE
+			if mvx < BLOCK_SIZE / 2:
+				vx = (c[1]-mvx) / BLOCK_SIZE
+			else:
+				vx = (c[1]+mvx) / BLOCK_SIZE
+
+			if mvy < BLOCK_SIZE / 2:
+				vy = (c[2]-mvy) / BLOCK_SIZE
+			else:
+				vy = (c[2]+mvy) / BLOCK_SIZE
 			tab_x = np.array([vx])
 			tab_y = np.array([vy])
 			tab_x = tab_x.astype(int)
@@ -339,8 +344,10 @@ def main():
 					mouse_x, mouse_y = event.button.x, event.button.y
 					# Sprawdzamy czy kliknięto na blok na dole
 
-					no_reverse = sprite.get_world_blocks()
-					blocks = no_reverse[::-1] # odwracamy
+					#no_reverse = sprite.get_world_blocks()
+					#blocks = no_reverse[::-1] # odwracamy
+					blocks = sprite.get_world_blocks()
+
 					print(blocks)
 					i = 0
 					for x, y in blocks:
@@ -428,6 +435,7 @@ def main():
 					#print ("selectef_block.x %d " % selected_block.x)
 					#print ("selected_block.y %d " % selected_block.y)
 					mouse_x, mouse_y = event.motion.x, event.motion.y
+
 					for c in selected_block.cell:
 						offset_x, offset_y = selected_block.get_offset(c)
 						#print ("offset_x: %d" % offset_x)
