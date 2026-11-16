@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+# matchingshapes.py - Tetris like matching schapes
+# © Przemysław R. Pietraszczyk
+# licence: MIT
+# 30-10-2026
+
 import os
 os.environ["PYSDL2_DLL_PATH"] = r"."
 import sys
@@ -207,12 +212,7 @@ class Sprite():
 			for x in range(15):
 				if all[y, x] == 1:
 					rect = SDL_Rect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-					#print("RYSUJE ALL")
-					#print("x: %d: " % x)
-					#print("y: %d: " % y)
 					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255)  # Żółty klocek
-					#else:
-					#   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)  # Biały klocek
 					SDL_RenderFillRect(renderer, ctypes.byref(rect))
 					SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255)  # Czarny kontur
 					SDL_RenderDrawRect(renderer, ctypes.byref(rect))
@@ -220,17 +220,9 @@ class Sprite():
 
 	def get_world_blocks(self):
 		"""Zwraca pozycje bloków w świecie (z uwagi na x,y)"""
-
 		block = []
-		#print("CELL")
-		#print(self.cell)
 		for c, x, y, ox, oy in self.cell:
-			#print ("get_world_blocks")
-			#print ("x %d" % x)
-			#print ("y %d" % y)
 			block.append((x, y))
-		#print("POZYCJE BLOKOW  W ŚWIECIE")
-		#print (blocks)
 		return block
 
 	def add_to_all(self):
@@ -262,21 +254,39 @@ def check_adjacency(block1, block2):
 	for x1, y1 in blocks1:
 		for y2 in range(15):
 			for x2 in range(15):
+				mvx = x1 % BLOCK_SIZE
+				mvy = y1 % BLOCK_SIZE
+				if mvx < BLOCK_SIZE / 2:
+					vx = int((x1-mvx) / BLOCK_SIZE)
+				else:
+					vx = int((x1+mvx) / BLOCK_SIZE)
+
+				if mvy < BLOCK_SIZE / 2:
+					vy = int((y1-mvy) / BLOCK_SIZE)
+				else:
+					vy = int((y1+mvy) / BLOCK_SIZE)
+
 				# Sprawdzamy czy bloki są przylegające (różnica nie większa niż rozmiar bloku)
 				if block2[y2, x2] == 1:
 					dx = abs(x1 - x2 * BLOCK_SIZE)
 					dy = abs(y1 - y2 * BLOCK_SIZE)
+
 					# Bloki są przylegające jeśli mają wspólny bok lub róg
-					if (dx <= BLOCK_SIZE and dy <= BLOCK_SIZE) and not (dx == 0 and dy == 0):
-						print ("CCCCCCCCCCCCC")
-						return True
+					if (dx <= BLOCK_SIZE and  dy <= BLOCK_SIZE) and not (dx == 0 and dy == 0):
+						if vx != x2 and vy != y2:
+							print(f"vx: {vx}  vy: {vy}")
+							print(f"x2: {x2}  y2: {y2}")
+							print ("CCCCCCCCCCCCC")
+							return True
+						elif vx == x2 and vy == y2:
+							print(f"2-vx: {vx}  2-vy: {vy}")
+							print(f"2-x2: {x2}  2-y2: {y2}")
+							return False
 	return False
 
 def is_block_adjacent_to_others(block, other_blocks):
 	"""Sprawdza czy blok jest przylegający do któregoś z innych bloków"""
 	if check_adjacency(block, other_blocks):
-		#other_blocks.append(block)
-		print ("AAAAAAAAAAAA")
 		return True
 	return False
 
@@ -365,24 +375,13 @@ def main():
 									pole_position_x = 0
 									pole_position_y += BLOCK_SIZE
 									i = 0
-
 								offset_xx = mouse_x - x
 								offset_yy = mouse_y - y
-								#print ("-___offest_x %d " % offset_xx)
-								#print ("-___offset_y %d " % offset_yy)
-
 								offset_x = offset_xx + pole_position_x
 								offset_y = offset_yy + pole_position_y
 								i += 1
-								#print ("-offest_x %d " % offset_x)
-								#print ("-offset_y %d " % offset_y)
-								#print ("poleposition_x %d" % pole_position_x)
-								#print ("poleposition_y %d" % pole_position_y)
-
 								selected_block.set_offset(offset_x, offset_y, c)
-
 								pole_position_x += BLOCK_SIZE
-
 							break
 			elif event.type == SDL_MOUSEBUTTONUP:
 				if event.button.button == SDL_BUTTON_LEFT and is_selected:
@@ -391,6 +390,9 @@ def main():
 					if is_block_adjacent_to_others(selected_block, all):
 						# Dodajemy blok do listy wszystkich bloków
 						selected_block.add_to_all()
+						# tylko gdy zaparkowano prawidlowo element
+						v=random.randint(0,FIG)
+						n=random.randint(0,MAXRAND)
 					'''
 					ret_block = clear_full_rows(all_blocks, SCREEN_WIDTH, SCREEN_HEIGHT)
 						if ret_block != None:
@@ -418,9 +420,8 @@ def main():
 						# Jeśli nie są przylegające, nie dodajemy bloku
 						pass
 					'''
+
 					sprite.del_sprite()
-					v=random.randint(0,FIG)
-					n=random.randint(0,MAXRAND)
 					xx = int((SCREEN_WIDTH / 2) - (2 * BLOCK_SIZE))
 					yy = int(SCREEN_HEIGHT  - (4 * BLOCK_SIZE))
 					for y in range(4):
@@ -432,17 +433,10 @@ def main():
 
 			elif event.type == SDL_MOUSEMOTION and is_selected:
 				if selected_block:
-					#print ("selectef_block.x %d " % selected_block.x)
-					#print ("selected_block.y %d " % selected_block.y)
 					mouse_x, mouse_y = event.motion.x, event.motion.y
-
 					for c in selected_block.cell:
 						offset_x, offset_y = selected_block.get_offset(c)
-						#print ("offset_x: %d" % offset_x)
-						#print ("offset_y: %d" % offset_y)
 						selected_block.set_pos(mouse_x - offset_x, mouse_y - offset_y, c)
-						#print ("selectef_block.x %d " % c[0])
-						#print ("selected_block.y %d " % c[1])
 		if current_time - clock > 16:
 			clock = current_time
 

@@ -1,3 +1,7 @@
+# [0.261116-0]
+* Nie mozna juz zaparkować zazanczonego elementu na zaparkowanych elementach
+* Ciągle obraca element
+
 # [0.261115-0]
 * Elementy parkują prawidłowo
 * Jednak po przemieszczeniu elementu, zostaje on obrucony
