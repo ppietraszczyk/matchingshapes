@@ -1,3 +1,7 @@
+# [0.261120-1]
+* Ograniczenia na skrajnych
+* FIXME - Jednak czasami ograniczenie źle zazębia względem elementów z 'all'
+
 # [0.261120-0]
 * Nie obraca już klocka
 * FIXME - Jednak możliwe jest zaznaczenie klocka, klikając w "otuline" wokół klocka

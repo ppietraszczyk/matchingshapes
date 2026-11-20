@@ -245,6 +245,22 @@ class Sprite():
 			tab_y = tab_y.astype(int)
 			if c[0] == 1 and vy >= 0 and vx >= 0:
 				all[tab_y, tab_x] = 1
+'''
+def can_move_sprite(sprite, mouse_x, mouse_y):
+	"""Sprawdza, czy wszystkie aktywne bloki figury zmieszczą się w oknie."""
+	for c in sprite.cell:
+		if c[0] == 1:  # Sprawdzamy tylko wypełnione części klocka
+			offset_x, offset_y = sprite.get_offset(c)
+			new_x = mouse_x - offset_x
+			new_y = mouse_y - offset_y
+
+			if (new_x < 0 or
+				new_x + BLOCK_SIZE > SCREEN_WIDTH or
+				new_y < 0 or
+				new_y + BLOCK_SIZE > SCREEN_HEIGHT):
+				return False
+	return True
+'''
 
 
 
@@ -339,7 +355,7 @@ def main():
 	offset_y = 0
 	running = True
 	clock = SDL_GetTicks()
-
+	accept = True
 
 	while running:
 		current_time = SDL_GetTicks()
@@ -417,14 +433,47 @@ def main():
 					is_selected = False
 					selected_block = None
 
+
 			elif event.type == SDL_MOUSEMOTION and is_selected:
 				if selected_block:
 					mouse_x, mouse_y = event.motion.x, event.motion.y
-					print("-----------------------------")
+
+					# Sprawdzenie możliwości ruchu w poziomie (oś X)
+					can_move_x = True
 					for c in selected_block.cell:
-						offset_x, offset_y = selected_block.get_offset(c)
-						print (f"-offset_y {offset_y}   -offset_x {offset_x}")
-						selected_block.set_pos(mouse_x - offset_x, mouse_y - offset_y, c)
+						if c[0] == 1:
+							ox, _ = selected_block.get_offset(c)
+							if not (0 <= mouse_x - ox <= SCREEN_WIDTH - BLOCK_SIZE):
+								can_move_x = False
+								break
+
+					# Sprawdzenie możliwości ruchu w pionie (oś Y)
+					can_move_y = True
+					for c in selected_block.cell:
+						if c[0] == 1:
+							_, oy = selected_block.get_offset(c)
+							if not (0 <= mouse_y - oy <= SCREEN_HEIGHT - BLOCK_SIZE):
+								can_move_y = False
+								break
+
+					# Aktualizacja pozycji osobno dla każdej dozwolonej osi
+					for c in selected_block.cell:
+						cx, cy = selected_block.get_pos(c)
+						ox, oy = selected_block.get_offset(c)
+						new_x = (mouse_x - ox) if can_move_x else cx
+						new_y = (mouse_y - oy) if can_move_y else cy
+						selected_block.set_pos(new_x, new_y, c)
+			'''
+			elif event.type == SDL_MOUSEMOTION and is_selected:
+				if selected_block:
+					mouse_x, mouse_y = event.motion.x, event.motion.y
+					# Przesuwamy cały klocek tylko wtedy, gdy WSZYSTKIE jego części mieszczą się w ekranie
+					if can_move_sprite(selected_block, mouse_x, mouse_y):
+						for c in selected_block.cell:
+							offset_x, offset_y = selected_block.get_offset(c)
+							selected_block.set_pos(mouse_x - offset_x, mouse_y - offset_y, c)
+
+			'''
 		if current_time - clock > 16:
 			clock = current_time
 
