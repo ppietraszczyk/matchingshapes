@@ -349,40 +349,26 @@ def main():
 			offset = []
 			if event.type == SDL_QUIT:
 				running = False
+
 			elif event.type == SDL_MOUSEBUTTONDOWN:
 				if event.button.button == SDL_BUTTON_LEFT:
 					mouse_x, mouse_y = event.button.x, event.button.y
-					# Sprawdzamy czy kliknięto na blok na dole
-
-					#no_reverse = sprite.get_world_blocks()
-					#blocks = no_reverse[::-1] # odwracamy
 					blocks = sprite.get_world_blocks()
 
-					print(blocks)
-					i = 0
 					for x, y in blocks:
-						#print("BLOCKS")
-						#print(blocks)
 						if (x <= mouse_x <= x + BLOCK_SIZE and
 							y <= mouse_y <= y + BLOCK_SIZE):
 							is_selected = True
 							selected_block = sprite
-							#print(selected_block)
-							pole_position_x = 0
-							pole_position_y = 0
+
+							# Poprawne obliczanie offsetu dla każdego segmentu z osobna
 							for c in selected_block.cell:
-								if i >= 4:
-									pole_position_x = 0
-									pole_position_y += BLOCK_SIZE
-									i = 0
-								offset_xx = mouse_x - x
-								offset_yy = mouse_y - y
-								offset_x = offset_xx + pole_position_x
-								offset_y = offset_yy + pole_position_y
-								i += 1
+								cx, cy = selected_block.get_pos(c)
+								offset_x = mouse_x - cx
+								offset_y = mouse_y - cy
 								selected_block.set_offset(offset_x, offset_y, c)
-								pole_position_x += BLOCK_SIZE
 							break
+
 			elif event.type == SDL_MOUSEBUTTONUP:
 				if event.button.button == SDL_BUTTON_LEFT and is_selected:
 					# Sprawdzamy czy blok jest przylegający do któregoś z innych bloków
@@ -434,8 +420,10 @@ def main():
 			elif event.type == SDL_MOUSEMOTION and is_selected:
 				if selected_block:
 					mouse_x, mouse_y = event.motion.x, event.motion.y
+					print("-----------------------------")
 					for c in selected_block.cell:
 						offset_x, offset_y = selected_block.get_offset(c)
+						print (f"-offset_y {offset_y}   -offset_x {offset_x}")
 						selected_block.set_pos(mouse_x - offset_x, mouse_y - offset_y, c)
 		if current_time - clock > 16:
 			clock = current_time
